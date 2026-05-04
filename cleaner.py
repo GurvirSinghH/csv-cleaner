@@ -18,6 +18,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
 
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side, numbers
+from openpyxl.utils import get_column_letter
+
 import pandas as pd
 from dotenv import load_dotenv
 from rich.console import Console
@@ -155,6 +158,87 @@ class DataCleaner:
             "remaining_nulls": int(self.df.isna().sum().sum()),
             "actions": self.log,
         }
+
+
+# ──────────────────────────────────────────────
+#  Formatted Excel Writer
+# ──────────────────────────────────────────────
+
+def save_formatted_excel(df: pd.DataFrame, output_path: str):
+    """Save DataFrame to a professionally formatted Excel file."""
+    with pd.ExcelWriter(output_path, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="Cleaned Data")
+        ws = writer.sheets["Cleaned Data"]
+
+        # ── Style definitions ──
+        header_font = Font(name="Calibri", bold=True, color="FFFFFF", size=11)
+        header_fill = PatternFill(start_color="2F5496", end_color="2F5496", fill_type="solid")
+        header_align = Alignment(horizontal="center", vertical="center", wrap_text=True)
+        cell_font = Font(name="Calibri", size=11)
+        even_fill = PatternFill(start_color="D6E4F0", end_color="D6E4F0", fill_type="solid")
+        thin_border = Border(
+            left=Side(style="thin", color="B4C6E7"),
+            right=Side(style="thin", color="B4C6E7"),
+            top=Side(style="thin", color="B4C6E7"),
+            bottom=Side(style="thin", color="B4C6E7"),
+        )
+
+        # ── Header row styling ──
+        for col_idx in range(1, len(df.columns) + 1):
+            cell = ws.cell(row=1, column=col_idx)
+            cell.font = header_font
+            cell.fill = header_fill
+            cell.alignment = header_align
+            cell.border = thin_border
+
+        # ── Data rows: font, alignment, alternating shading, borders ──
+        for row_idx in range(2, len(df) + 2):
+            for col_idx in range(1, len(df.columns) + 1):
+                cell = ws.cell(row=row_idx, column=col_idx)
+                cell.font = cell_font
+                cell.border = thin_border
+                cell.alignment = Alignment(vertical="center")
+                # Alternating row colour
+                if row_idx % 2 == 0:
+                    cell.fill = even_fill
+
+        # ── Column-specific formatting ──
+        for col_idx, col_name in enumerate(df.columns, start=1):
+            col_lower = col_name.lower()
+            letter = get_column_letter(col_idx)
+
+            # Date columns → YYYY-MM-DD
+            if any(kw in col_lower for kw in ["date", "time", "created", "joined", "updated"]):
+                for row_idx in range(2, len(df) + 2):
+                    cell = ws.cell(row=row_idx, column=col_idx)
+                    cell.number_format = "YYYY-MM-DD"
+                    cell.alignment = Alignment(horizontal="center", vertical="center")
+
+            # Currency / numeric columns → #,##0
+            if any(kw in col_lower for kw in ["salary", "amount", "price", "cost", "revenue"]):
+                for row_idx in range(2, len(df) + 2):
+                    cell = ws.cell(row=row_idx, column=col_idx)
+                    cell.number_format = "#,##0"
+                    cell.alignment = Alignment(horizontal="right", vertical="center")
+
+        # ── Auto-fit column widths ──
+        for col_idx, col_name in enumerate(df.columns, start=1):
+            # Start with header length
+            max_len = len(str(col_name)) + 2
+            # Check data values
+            for row_idx in range(2, min(len(df) + 2, 102)):  # sample first 100 rows
+                cell_val = ws.cell(row=row_idx, column=col_idx).value
+                if cell_val is not None:
+                    max_len = max(max_len, len(str(cell_val)) + 2)
+            # Cap at a reasonable width
+            col_width = min(max_len, 40)
+            ws.column_dimensions[get_column_letter(col_idx)].width = col_width
+
+        # ── Freeze the header row ──
+        ws.freeze_panes = "A2"
+
+        # ── Auto-filter ──
+        ws.auto_filter.ref = ws.dimensions
 
 
 # ──────────────────────────────────────────────
@@ -374,7 +458,7 @@ def main():
             input_path.parent / f"cleaned_{input_path.stem}_{TIMESTAMP}.xlsx"
         )
         task = progress.add_task("Saving Excel file...", total=None)
-        cleaned_df.to_excel(output_path, index=False, engine="openpyxl")
+        save_formatted_excel(cleaned_df, output_path)
         progress.update(task, description="[green]✓[/] Excel saved", completed=True)
 
         # Report

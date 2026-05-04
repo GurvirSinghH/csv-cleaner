@@ -21,7 +21,7 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 # Import the cleaner engine from cleaner.py
-from cleaner import DataCleaner, generate_summary_report, send_email, print_summary_table
+from cleaner import DataCleaner, generate_summary_report, save_formatted_excel, send_email, print_summary_table
 
 import pandas as pd
 
@@ -117,7 +117,7 @@ class CSVHandler(FileSystemEventHandler):
 
         # ── Save ──
         output_path = str(self.output_dir / f"cleaned_{path.stem}_{timestamp}.xlsx")
-        cleaned_df.to_excel(output_path, index=False, engine="openpyxl")
+        save_formatted_excel(cleaned_df, output_path)
 
         # ── Report ──
         report_path = generate_summary_report(summary, str(path), output_path)
