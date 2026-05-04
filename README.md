@@ -32,7 +32,51 @@ cp .env.example .env
 python cleaner.py sample_messy.csv --preview
 ```
 
-## Usage
+---
+
+## 🤖 Automated Mode (Watcher)
+
+**Don't want to run anything manually?** Start the watcher and just drop files into a folder.
+
+```bash
+# Start watching the ./inbox folder (auto-created)
+python watcher.py
+
+# Watch a specific folder (e.g. Downloads)
+python watcher.py ~/Downloads
+
+# Custom input + output folders
+python watcher.py ./inbox -o ./cleaned
+
+# Watch without email
+python watcher.py --no-email
+```
+
+**How it works:**
+1. The watcher monitors a folder for new `.csv` / `.xlsx` files
+2. When a file appears, it waits for the upload to finish
+3. Auto-cleans the data and saves a clean `.xlsx` + report
+4. Emails both files to you (if configured)
+5. Marks the file as processed (won't re-process on restart)
+
+> Drop a file → get a clean Excel in your inbox. That's it.
+
+### Run in the background
+
+```bash
+# Run as a background process
+nohup python watcher.py ~/Downloads -o ./cleaned &> watcher.log &
+
+# Check the log
+tail -f watcher.log
+
+# Stop it
+kill $(pgrep -f "python watcher.py")
+```
+
+---
+
+## Manual Mode
 
 ```bash
 # Basic — clean and email
@@ -63,7 +107,3 @@ python cleaner.py data.csv -o output.xlsx --preview --no-email
 Each run produces:
 - `cleaned_<name>_<timestamp>.xlsx` — The cleaned dataset
 - `cleaned_<name>_<timestamp>_report.txt` — Summary of all changes made
-
-## .gitignore
-
-The `.env` file containing credentials is excluded via `.gitignore`.

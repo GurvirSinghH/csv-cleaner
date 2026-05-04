@@ -1,0 +1,29 @@
+============================================================
+  DATA CLEANING SUMMARY REPORT
+  Generated: 2026-05-04 20:30:47
+============================================================
+
+  Input File  : sample_messy.csv
+  Output File : cleaned_sample_messy_20260504_203047.xlsx
+
+────────────────────────────────────────────────────────────
+  METRICS
+────────────────────────────────────────────────────────────
+  Original Rows    : 19
+  Cleaned Rows     : 13
+  Rows Removed     : 6
+  Remaining Nulls  : 10
+
+────────────────────────────────────────────────────────────
+  CLEANING ACTIONS PERFORMED
+────────────────────────────────────────────────────────────
+  ✓ Whitespace stripped in cells: 6
+  ✓ Empty rows removed: 3
+  ✓ Duplicate rows removed: 3
+  ✓ Invalid dates set to blank in 'Date_Joined': 4
+  ✓ Date values standardized: 9
+  ✓ Numeric columns coerced: 1
+  ✓ Text columns title-cased: 1
+  ✓ Invalid emails cleared: 1
+
+============================================================
