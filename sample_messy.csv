@@ -1,0 +1,20 @@
+Name,Email,Phone,Date_Joined,Salary,Department
+John Smith,john@example.com,555-1234,2023-01-15,50000,Engineering
+Jane Doe,jane@example.com,555-5678,01/15/2023,62000,Marketing
+John Smith,john@example.com,555-1234,2023-01-15,50000,Engineering
+,,,,, 
+Bob Johnson,bob@example,555-9999,2023-03-20,  45000  ,  Sales  
+Alice Williams,alice@example.com,,March 5 2023,,Engineering
+  Charlie Brown  ,charlie@example.com,555-1111,2023/04/10,70000,marketing
+Jane Doe,jane@example.com,555-5678,01/15/2023,62000,Marketing
+,,,,, 
+David Lee,david@example.com,555-2222,2023-05-01,55000,ENGINEERING
+Eve Wilson,eve@example.com,phone_here,2023-06-15,not_a_number,Sales
+Frank Miller,frank@example.com,555-3333,2023-07-20,48000,Marketing
+,missing@example.com,555-4444,2023-08-01,52000,Sales
+Grace Kim,grace@example.com,555-5555,2023-09-10,67000,Engineering
+Hank Davis,,555-6666,2023-10-05,43000,Marketing
+Grace Kim,grace@example.com,555-5555,2023-09-10,67000,Engineering
+Ivan Torres,ivan@example.com,555-7777,invalid_date,59000,Sales
+  ,  ,  ,  ,  ,  
+Jack White,jack@example.com,555-8888,2023-12-01,71000,Engineering
